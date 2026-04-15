@@ -1,14 +1,21 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, nativeImage } from 'electron'
 import { join } from 'path'
 import { readFile, writeFile, copyFile } from 'fs/promises'
 import { existsSync } from 'fs'
 
 function createWindow(): void {
+  const iconPath = resolveIconPath()
+
+  if (process.platform === 'darwin' && iconPath && app.dock) {
+    app.dock.setIcon(nativeImage.createFromPath(iconPath))
+  }
+
   const win = new BrowserWindow({
     width: 960,
     height: 720,
     minWidth: 700,
     minHeight: 500,
+    icon: iconPath,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -22,6 +29,14 @@ function createWindow(): void {
   } else {
     win.loadFile(join(__dirname, '../renderer/index.html'))
   }
+}
+
+function resolveIconPath(): string | undefined {
+  const candidate = app.isPackaged
+    ? join(process.resourcesPath, 'icon.png')
+    : join(__dirname, '../../build/icon.png')
+
+  return existsSync(candidate) ? candidate : undefined
 }
 
 app.whenReady().then(createWindow)

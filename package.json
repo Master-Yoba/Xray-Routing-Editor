@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
+    "generate:icons": "node scripts/generate-icons.mjs",
     "start": "electron-vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -15,22 +16,27 @@
   },
   "build": {
     "appId": "com.xray.routing-gui",
+    "artifactName": "${productName}.${ext}",
     "productName": "Xray Routing Editor",
     "directories": {
       "buildResources": "build",
       "output": "dist"
     },
+    "extraResources": [
+      {
+        "from": "build/icon.png",
+        "to": "icon.png"
+      }
+    ],
     "files": [
       "out/**/*"
     ],
+    "mac": {
+      "icon": "build/icon.icns"
+    },
     "win": {
+      "icon": "build/icon.ico",
       "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
         {
           "target": "portable",
           "arch": [
@@ -44,6 +50,7 @@
       "allowToChangeInstallationDirectory": true
     },
     "linux": {
+      "icon": "build/icon.png",
       "target": [
         {
           "target": "AppImage",
