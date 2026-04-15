@@ -2,6 +2,9 @@
 
 Xray Routing Editor is a desktop GUI for editing the `routing` section of an `xray-core` configuration file. It is intended for users who want to manage routing rules visually instead of editing JSON or JSONC by hand.
 
+<img width="500" height="510" alt="image" src="https://github.com/user-attachments/assets/7f0f8e9f-829d-4b20-9cac-9790466b70bf" /> <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/ce253125-4a8f-42ca-aa88-0f69259d281a" />
+
+
 The app follows the official Xray routing model documented by Project X:
 
 - <https://xtls.github.io/en/config/routing.html>
