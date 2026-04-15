@@ -95,3 +95,34 @@
   height: 14px;
   cursor: pointer;
 }
+
+/* ── ruleTag highlight ── */
+.label-note {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--clr-muted);
+  font-size: 10px;
+}
+
+.rule-tag-input {
+  border-color: var(--clr-accent-dim) !important;
+  color: #f6c90e !important;
+  font-weight: 600;
+}
+
+.rule-tag-input:focus {
+  border-color: var(--clr-accent) !important;
+}
+
+/* ── validation ── */
+.input-error {
+  border-color: var(--clr-danger) !important;
+}
+
+.field-error {
+  display: block;
+  font-size: 11px;
+  color: var(--clr-danger);
+  margin-top: 2px;
+}

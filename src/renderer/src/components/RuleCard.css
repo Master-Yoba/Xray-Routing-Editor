@@ -50,6 +50,7 @@
   flex-shrink: 0;
 }
 
+/* ── target badge ── */
 .target-badge {
   font-size: 12px;
   font-weight: 600;
@@ -59,19 +60,50 @@
   flex-shrink: 0;
 }
 
+/* blue — regular outbound */
 .target-outbound {
-  background: rgba(99, 179, 237, 0.15);
-  color: #63b3ed;
+  background: rgba(79, 126, 248, 0.15);
+  color: #6fa0ff;
 }
 
+/* red — blackhole */
+.target-blackhole {
+  background: rgba(245, 101, 101, 0.15);
+  color: #fc8181;
+}
+
+/* cyan — freedom */
+.target-freedom {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+}
+
+/* green — balancer */
 .target-balancer {
   background: rgba(154, 230, 180, 0.15);
   color: #9ae6b4;
 }
 
+/* dark gray — no target */
 .target-none {
-  background: rgba(245, 101, 101, 0.12);
-  color: #fc8181;
+  background: rgba(113, 128, 150, 0.12);
+  color: #718096;
+}
+
+/* ── ruleTag label ── */
+.rule-tag-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f6c90e;
+  background: rgba(246, 201, 14, 0.1);
+  border: 1px solid rgba(246, 201, 14, 0.25);
+  border-radius: 4px;
+  padding: 1px 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rule-summary {

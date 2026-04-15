@@ -25,8 +25,8 @@
     }
   },
   "metrics": {
-      "tag": "Metrics",
-      "listen": "0.0.0.0:11111"
+    "tag": "Metrics",
+    "listen": "0.0.0.0:11111"
   },
   "inbounds": [
     {
@@ -72,7 +72,6 @@
         "udp": true
       }
     },
-
     {
       "tag": "monitor-alexhost",
       "port": 3081,
@@ -98,7 +97,6 @@
         "udp": true
       }
     },
-
     {
       "tag": "monitor-lumadock",
       "port": 3082,
@@ -124,7 +122,6 @@
         "udp": true
       }
     },
-
     {
       "tag": "Vless-TCP-XTLS",
       "port": 443, // This is TLS entrypoint. This entrypoint does the SSL Termination then routes the request based on the Path or ALPN type.
@@ -133,25 +130,25 @@
       "settings": {
         "clients": [
           {
-            "id": "23a6c822",
+            "id": "23a6c822-3271-11f1-9f5a-5339fb17ce54",
             "email": "alex-tcp-xtls",
             "flow": "xtls-rprx-vision",
             "level": 0
           },
           {
-            "id": "3f0c5c8a",
+            "id": "3f0c5c8a-d034-465d-98c7-fa324cb7b123",
             "email": "vladimir-tcp-xtls",
             "flow": "xtls-rprx-vision",
             "level": 0
           },
           {
-            "id": "fa6dadfb",
+            "id": "fa6dadfb-4725-4cf4-acd5-71fdef61555d",
             "email": "julia-tcp-xtls",
             "flow": "xtls-rprx-vision",
             "level": 0
           },
           {
-            "id": "8335b849",
+            "id": "8335b849-bd05-447a-bf57-daf2754748b9",
             "email": "helen-tcp-xtls",
             "flow": "xtls-rprx-vision",
             "level": 0
@@ -159,22 +156,22 @@
         ],
         "decryption": "none",
         "fallbacks": [
-         // {
-         //   // if the path was `/vlws`, pass it to vless-ws listener
-         //   "path": "/vlesswshidden",
-         //   "dest": "127.0.0.1:8889"
-         // },
-         // {
-         //   // if the request's ALPN was HTTP2, pass it to trojan-tcp. (Also from trojan-tcp fallback to Nginx HTTP2)
-         //   "alpn": "h2",
-         //   "dest": "/dev/shm/h2.sock",
-         //   "xver": 2
-         // },
-         // {
-         //   // if not any other condition, pass it to Nginx HTTP1.1 listener
-         //   "dest": "/dev/shm/h1.sock",
-         //   "xver": 2
-         // }
+          // {
+          //   // if the path was `/vlws`, pass it to vless-ws listener
+          //   "path": "/vlesswshidden",
+          //   "dest": "127.0.0.1:8889"
+          // },
+          // {
+          //   // if the request's ALPN was HTTP2, pass it to trojan-tcp. (Also from trojan-tcp fallback to Nginx HTTP2)
+          //   "alpn": "h2",
+          //   "dest": "/dev/shm/h2.sock",
+          //   "xver": 2
+          // },
+          // {
+          //   // if not any other condition, pass it to Nginx HTTP1.1 listener
+          //   "dest": "/dev/shm/h1.sock",
+          //   "xver": 2
+          // }
         ]
       },
       "streamSettings": {
@@ -207,52 +204,72 @@
         ]
       }
     },
-  {
-    #"listen": "127.0.0.1",
-    "listen": "/dev/shm/grpc.socket,0666",
-    #"port": 8888,
-    "protocol": "vless",
-    "tag": "grpc",
-    "settings": {
-      "clients": [
-        {
-          "id": "4657aa90",
-          "email": "alex-grpc"
+    {
+      "listen": "/dev/shm/grpc.socket,0666",
+      "protocol": "vless",
+      "tag": "grpc",
+      "settings": {
+        "clients": [
+          {
+            "id": "4657aa90-3270-11f1-ae2a-7f7c7ff6ba77",
+            "email": "alex-grpc"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "5bfb0b9e327011f18280df21b9338538"
         }
-      ],
-      "decryption": "none"
+      }
     },
-    "streamSettings": {
-      "network": "grpc",
-      "grpcSettings": {
-        "serviceName": "5b21b9338538"
+    {
+      "listen": "/dev/shm/ws.socket,0666",
+      "protocol": "vless",
+      "tag": "ws",
+      "settings": {
+        "clients": [
+          {
+            "id": "4657aa90-3270-11f1-ae2a-7f7c7ff6ba77",
+            "email": "alex-ws"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "6d1ce0dc327011f1893dcf97574b1818"
+        }
+      }
+    },
+    {
+      "port": 5353,
+      "protocol": "shadowsocks",
+      "settings": {
+        "method": "2022-blake3-aes-128-gcm",
+        "password": "jG9FX9oL+w0ZiNpymCgHiA==",
+        "clients": [
+          {
+            "password": "J9oBRl7gSSxDTILhKTcXbA==",
+            "email": "alex-shadowsocks"
+          },
+          {
+            "password": "HCJ2OF1BFb613w9C8JAzXw==",
+            "email": "julia-shadowsocks"
+          },
+          {
+            "password": "TaKF7ixDiZgXRZvtBwd1DA==",
+            "email": "helen-shadowsocks"
+          }
+        ],
+        "network": "tcp,udp"
       }
     }
-  },
-
-  {
-    "listen": "/dev/shm/ws.socket,0666",
-    "protocol": "vless",
-    "tag": "ws",
-    "settings": {
-      "clients": [
-        {
-          "id": "4657aa90",
-          "email": "alex-ws"
-        }
-      ],
-      "decryption": "none"
-    },
-    "streamSettings": {
-      "network": "ws",
-      "wsSettings": {
-        "path": "6d1ce0dc318"
-      }
-    }
-  },
-
+  ],
   "outbounds": [
-      //rprx_reality_classic
+    //rprx_reality_classic
     {
       "tag": "xtls-vision-reality",
       "protocol": "vless",
@@ -263,7 +280,7 @@
             "port": 443,
             "users": [
               {
-                "id": "9e2a01ce-",
+                "id": "9e2a01ce-490e-4c94-b46f-cff8c0ca0ad4",
                 "encryption": "none",
                 "flow": "xtls-rprx-vision"
               }
@@ -278,14 +295,13 @@
           "serverName": "unimedia.info",
           "fingerprint": "chrome",
           "show": false,
-          "publicKey": "nDhPKBn7r6z2LR2g",
-          "shortId": "d7ef0f72",
+          "publicKey": "nDhPKBn7JSDNAFTPL9F8LpvsJLVWiwGrO5Jr6z2LR2g",
+          "shortId": "d7ef0fe4a9866372",
           "spiderX": ""
         }
       }
     },
-
-      //xhttp_reality_full
+    //xhttp_reality_full
     {
       "tag": "xhttp_reality_md",
       "protocol": "vless",
@@ -296,7 +312,7 @@
             "port": 443,
             "users": [
               {
-                "id": "a077ee6251f445",
+                "id": "a077e342-3ea3-456e-a81c-ce9e6251f445",
                 "encryption": "none"
               }
             ]
@@ -310,13 +326,13 @@
           "serverName": "unimedia.info",
           "fingerprint": "chrome",
           "show": false,
-          "publicKey": "nDhP6z2LR2g",
-          "shortId": "d7ef0f372",
+          "publicKey": "nDhPKBn7JSDNAFTPL9F8LpvsJLVWiwGrO5Jr6z2LR2g",
+          "shortId": "d7ef0fe4a9866372",
           "spiderX": ""
         },
         "xhttpSettings": {
           "host": "",
-          "path": "/xhttp14eb50156b187dd",
+          "path": "/xhttp14e7d09baa8f34134ba0b50156b187dd",
           "mode": "stream-up",
           "extra": {
             "xmux": { // h2/h3 mainly, client only
@@ -330,7 +346,6 @@
         }
       }
     },
-
     {
       "tag": "xhttp_reality_lumadock_fi",
       "protocol": "vless",
@@ -341,9 +356,9 @@
             "port": 443,
             "users": [
               {
-                "id": "4d6bba0198",
+                "id": "4d6bb73a-b2af-49b2-9562-c02fc98a0198",
                 "flow": "xtls-rprx-vision",
-                "encryption": "mlk0sZ5fxhRqnsdeka3pkk"
+                "encryption": "mlkem768x25519plus.xorpub.0rtt.fLJtNPKRNvPYRFgcqzjCRXpm0sZ5fxhRqnsdeka3pkk"
               }
             ]
           }
@@ -356,13 +371,13 @@
           "serverName": "bcat-data-lp1.cdn.nintendo.net",
           "fingerprint": "chrome",
           "show": false,
-          "publicKey": "MpZvsXPaV3IpsWwVjQ",
-          "shortId": "b72a219b2",
+          "publicKey": "MpZvl4nmsXq-vPch5aOtyMyXIDG_BxJPaV3IpsWwVjQ",
+          "shortId": "b72a212d0d7379b2",
           "spiderX": ""
         },
         "xhttpSettings": {
           "host": "",
-          "path": "/xhttp133da31",
+          "path": "/xhttp1339a191659d44b0912d9075fdd8da31",
           "mode": "stream-up",
           "extra": {
             "xmux": { // h2/h3 mainly, client only
@@ -371,58 +386,62 @@
               "hMaxRequestTimes": "600-900",
               "hMaxReusableSecs": "1800-3000",
               "hKeepAlivePeriod": 0
-            }}
-        }
-      }
-    },
-
-      {
-        "tag": "cdn_xhttp_cia-out",
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "exility.22181771.xyz",
-              "port": 443,
-              "users": [
-                {
-                  "id": "a07251f445",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "proxySettings": {"tag": "ciadpi-cf", "transportLayer": true},
-        "streamSettings": {
-          "network": "xhttp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "exility.22181771.xyz",
-            "allowInsecure": false,
-            "alpn": ["h2"],
-            "fingerprint": "edge"
-          },
-          "xhttpSettings": {
-            "host": "",
-            "path": "/xhttp17dd",
-            "mode": "stream-up",
-            "extra": {
-              "headers": {
-                "User-Agent": "Hub Opsec"
-              },
-              "xmux": { // h2/h3 mainly, client only
-                "maxConnections": "9-10",
-                "cMaxReuseTimes": 0,
-                "hMaxRequestTimes": "600-900",
-                "hMaxReusableSecs": "1800-3000",
-                "hKeepAlivePeriod": 0
-              }
             }
           }
         }
+      }
     },
-
+    {
+      "tag": "cdn_xhttp_cia-out",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "exility.22181771.xyz",
+            "port": 443,
+            "users": [
+              {
+                "id": "a077e342-3ea3-456e-a81c-ce9e6251f445",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "proxySettings": {
+        "tag": "ciadpi-cf",
+        "transportLayer": true
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "exility.22181771.xyz",
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ],
+          "fingerprint": "edge"
+        },
+        "xhttpSettings": {
+          "host": "",
+          "path": "/xhttp14e7d09baa8f34134ba0b50156b187dd",
+          "mode": "stream-up",
+          "extra": {
+            "headers": {
+              "User-Agent": "Hub Opsec"
+            },
+            "xmux": { // h2/h3 mainly, client only
+              "maxConnections": "9-10",
+              "cMaxReuseTimes": 0,
+              "hMaxRequestTimes": "600-900",
+              "hMaxReusableSecs": "1800-3000",
+              "hKeepAlivePeriod": 0
+            }
+          }
+        }
+      }
+    },
     {
       "protocol": "socks",
       "settings": {
@@ -441,7 +460,6 @@
       },
       "tag": "dv-out"
     },
-
     {
       "protocol": "socks",
       "settings": {
@@ -456,7 +474,6 @@
       },
       "tag": "d22-out"
     },
-
     {
       "protocol": "socks",
       "settings": {
@@ -493,7 +510,6 @@
       },
       "tag": "ciadpi-akamai"
     },
-
     {
       "protocol": "socks",
       "settings": {
@@ -506,7 +522,6 @@
       },
       "tag": "ciadpi-amazon"
     },
-
     {
       "protocol": "socks",
       "settings": {
@@ -516,17 +531,15 @@
             "port": 1084 // The port of your SOCKS proxy server
           }
         ]
-
       },
       "tag": "ciadpi-google"
     },
-
     {
       "tag": "direct",
       "protocol": "freedom",
       "settings": {
         "domainStrategy": "UseIPv4"
-        }
+      }
     },
     {
       "tag": "block",
@@ -554,8 +567,12 @@
       "192.168.71.14",
       {
         "address": "https://common.dot.dns.yandex.net/dns-query",
-        "domains": ["geosite:category-ru"],
-        "expectedIPs": ["geoip:ru"],
+        "domains": [
+          "geosite:category-ru"
+        ],
+        "expectedIPs": [
+          "geoip:ru"
+        ],
         "skipFallback": false
       }
       //"https://dns.google/dns-query"
@@ -588,7 +605,9 @@
         "type": "field",
         "outboundTag": "block",
         "domain": [
-          "max.ru", "oneme.ru", "okcdn.ru"
+          "max.ru",
+          "oneme.ru",
+          "okcdn.ru"
         ]
       },
       {
@@ -633,7 +652,11 @@
           "tbank",
           "geosite:category-ru"
         ],
-        "user": ["alex-tcp-xtls", "alex-grpc", "alex-ws"]
+        "user": [
+          "alex-tcp-xtls",
+          "alex-grpc",
+          "alex-ws"
+        ]
       },
       {
         "type": "field",
@@ -671,7 +694,6 @@
         "network": "tcp",
         "port": "22"
       },
-
       // monitor
       {
         "type": "field",
@@ -687,7 +709,6 @@
           "monitor-lumadock"
         ]
       },
-
       // discord voice
       {
         "type": "field",
@@ -721,7 +742,6 @@
       {
         "type": "field",
         "outboundTag": "dv-out",
-        #"balancerTag": "proxy",
         "domain": [
           "geosite:youtube"
         ],
@@ -734,7 +754,11 @@
           "geoip:ru"
         ],
         "ruleTag": "geoip-ru",
-        "user": ["alex-tcp-xtls", "alex-grpc", "alex-ws"]
+        "user": [
+          "alex-tcp-xtls",
+          "alex-grpc",
+          "alex-ws"
+        ]
       },
       {
         "type": "field",
@@ -765,7 +789,6 @@
         ],
         "ruleTag": "meta"
       },
-
       {
         "type": "field",
         "balancerTag": "proxy",
@@ -774,10 +797,9 @@
         ],
         "ruleTag": "ru-blocked"
       },
-       // extra sanctions
-       {
+      // extra sanctions
+      {
         "type": "field",
-        #"balancerTag": "proxy",
         "outboundTag": "cdn_xhttp_cia-out",
         "domain": [
           "domain:digitalocean.com",
@@ -807,7 +829,6 @@
         ],
         "network": "tcp"
       },
-
       {
         "type": "field",
         "outboundTag": "ciadpi-akamai",
@@ -828,16 +849,19 @@
         "type": "field",
         "balancerTag": "proxy",
         "ip": [
-          "ext:geoip-services.dat:amazon", "ext:geoip-services.dat:cloudfront"
+          "ext:geoip-services.dat:amazon",
+          "ext:geoip-services.dat:cloudfront"
         ],
-        "user": ["helen-tcp-xtls"]
+        "user": [
+          "helen-tcp-xtls"
+        ]
       },
-
       {
         "type": "field",
         "outboundTag": "ciadpi-amazon",
         "ip": [
-          "ext:geoip-services.dat:amazon", "ext:geoip-services.dat:cloudfront"
+          "ext:geoip-services.dat:amazon",
+          "ext:geoip-services.dat:cloudfront"
         ],
         "network": "tcp"
       },
@@ -845,9 +869,13 @@
         "type": "field",
         "balancerTag": "proxy",
         "ip": [
-          "ext:geoip-services.dat:amazon", "ext:geoip-services.dat:cloudfront", "geoip:cloudflare"
+          "ext:geoip-services.dat:amazon",
+          "ext:geoip-services.dat:cloudfront",
+          "geoip:cloudflare"
         ],
-        "user": ["alex-tcp-xtls"]
+        "user": [
+          "alex-tcp-xtls"
+        ]
       },
       {
         "type": "field",
@@ -858,23 +886,35 @@
     "balancers": [
       {
         "tag": "proxy",
-        "selector": ["cdn_xhttp_cia-out"],
+        "selector": [
+          "cdn_xhttp_cia-out"
+        ],
         "fallbackTag": "loopback-out",
-        "strategy": {"type": "leastPing"}
+        "strategy": {
+          "type": "leastPing"
+        }
       },
       {
         "tag": "proxy-fallback",
-        "selector": ["xhttp_reality_md", "xhttp_reality_lumadock_fi"],
+        "selector": [
+          "xhttp_reality_md",
+          "xhttp_reality_lumadock_fi"
+        ],
         "fallbackTag": "xtls-vision-reality",
-        "strategy": {"type": "leastPing"}
+        "strategy": {
+          "type": "leastPing"
+        }
       }
     ]
   },
   "observatory": {
-    "subjectSelector": ["xhttp_reality_md", "xhttp_reality_lumadock_fi", "cdn_xhttp_cia-out"],
+    "subjectSelector": [
+      "xhttp_reality_md",
+      "xhttp_reality_lumadock_fi",
+      "cdn_xhttp_cia-out"
+    ],
     "probeUrl": "https://www.google.com/generate_204",
     "probeInterval": "5m",
     "enableConcurrency": true
   }
 }
-

@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react'
 import type { XrayConfig, RuleObject, ExtractedTags } from './types'
-import { parseConfig, extractTags, replaceRules, serializeConfig } from './configIO'
+import { parseConfig, extractTags, replaceRules, replaceRoutingInJsonc } from './configIO'
 import { Toolbar } from './components/Toolbar'
 import { RuleList } from './components/RuleList'
+import { PreviewModal } from './components/PreviewModal'
 import './App.css'
 
 declare global {
@@ -26,16 +27,22 @@ function withId(rule: RuleObject): RuleObject {
 export function App() {
   const [configPath, setConfigPath] = useState<string | null>(null)
   const [config, setConfig] = useState<XrayConfig | null>(null)
+  /** Original raw JSONC text — used for surgical routing replacement on save */
+  const [rawText, setRawText] = useState<string | null>(null)
   const [rules, setRules] = useState<RuleObject[]>([])
   const [tags, setTags] = useState<ExtractedTags>({
     inboundTags: [],
     outboundTags: [],
     balancerTags: [],
-    users: []
+    users: [],
+    outboundProtocols: {}
   })
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [dirty, setDirty] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  /** Serialized routing section at last open/save — used as diff baseline */
+  const [savedRoutingJson, setSavedRoutingJson] = useState<string | null>(null)
+  const [previewOpen, setPreviewOpen] = useState(false)
 
   const handleOpen = useCallback(async () => {
     try {
@@ -45,49 +52,61 @@ export function App() {
       const extracted = extractTags(parsed)
       const loadedRules = (parsed.routing?.rules ?? []).map(withId)
       setConfig(parsed)
+      setRawText(result.text)
       setTags(extracted)
       setRules(loadedRules)
       setConfigPath(result.path)
       setDirty(false)
       setExpandedId(null)
       setError(null)
+      setSavedRoutingJson(JSON.stringify(parsed.routing ?? {}, null, 2))
     } catch (e) {
       setError(`Failed to open config: ${String(e)}`)
     }
   }, [])
 
-  const buildJson = useCallback((): string | null => {
-    if (!config) return null
-    const updated = replaceRules(config, rules)
-    return serializeConfig(updated)
-  }, [config, rules])
+  /** Build the output JSONC text, preserving comments outside routing */
+  const buildOutput = useCallback((): string | null => {
+    if (!config || !rawText) return null
+    const newRouting = replaceRules(config, rules)
+    return replaceRoutingInJsonc(rawText, newRouting)
+  }, [config, rawText, rules])
 
   const handleSave = useCallback(async () => {
     if (!configPath || !config) return
     try {
-      const text = buildJson()!
+      const text = buildOutput()!
       await window.electronAPI.saveConfig(configPath, text)
+      // Update rawText so subsequent saves diff from the newly saved content
+      setRawText(text)
+      setSavedRoutingJson(JSON.stringify(replaceRules(config, rules), null, 2))
       setDirty(false)
       setError(null)
     } catch (e) {
       setError(`Failed to save: ${String(e)}`)
     }
-  }, [configPath, config, buildJson])
+  }, [configPath, config, buildOutput])
 
   const handleSaveAs = useCallback(async () => {
     if (!config) return
     try {
-      const text = buildJson()!
+      const text = buildOutput()!
       const newPath = await window.electronAPI.saveConfigAs(text)
       if (newPath) {
         setConfigPath(newPath)
+        setRawText(text)
+        setSavedRoutingJson(JSON.stringify(replaceRules(config, rules), null, 2))
         setDirty(false)
         setError(null)
       }
     } catch (e) {
       setError(`Failed to save: ${String(e)}`)
     }
-  }, [config, buildJson])
+  }, [config, buildOutput])
+
+  const handlePreview = useCallback(() => {
+    setPreviewOpen(true)
+  }, [])
 
   const handleAddRule = useCallback(() => {
     const rule = newRule()
@@ -111,6 +130,7 @@ export function App() {
         onSave={handleSave}
         onSaveAs={handleSaveAs}
         onAddRule={handleAddRule}
+        onPreview={handlePreview}
       />
 
       {error && (
@@ -148,6 +168,14 @@ export function App() {
             />
           </div>
         </div>
+      )}
+
+      {previewOpen && config && (
+        <PreviewModal
+          oldContent={savedRoutingJson ?? ''}
+          newContent={JSON.stringify(replaceRules(config, rules), null, 2)}
+          onClose={() => setPreviewOpen(false)}
+        />
       )}
     </div>
   )

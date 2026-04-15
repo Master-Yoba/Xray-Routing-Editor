@@ -76,4 +76,6 @@ export interface ExtractedTags {
   outboundTags: string[]
   balancerTags: string[]
   users: string[]
+  /** protocol name keyed by outbound tag, e.g. { "block": "blackhole", "direct": "freedom" } */
+  outboundProtocols: Record<string, string>
 }

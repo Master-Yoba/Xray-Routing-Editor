@@ -1,4 +1,5 @@
 import type { RuleObject, ExtractedTags } from '../types'
+import { validatePortString, validateCidrList } from '../configIO'
 import { TagSelect } from '../fields/TagSelect'
 import { TagMultiSelect } from '../fields/TagMultiSelect'
 import { StringListInput } from '../fields/StringListInput'
@@ -23,8 +24,7 @@ export function RuleEditor({ rule, tags, onChange }: Props) {
     const cur = new Set(selectedNetworks)
     if (cur.has(net)) cur.delete(net)
     else cur.add(net)
-    const joined = Array.from(cur).join(',')
-    set('network', joined || undefined)
+    set('network', Array.from(cur).join(',') || undefined)
   }
 
   const selectedProtocols = rule.protocol ?? []
@@ -38,22 +38,26 @@ export function RuleEditor({ rule, tags, onChange }: Props) {
   const setOutbound = (val: string) => {
     onChange({ ...rule, outboundTag: val || undefined, balancerTag: val ? undefined : rule.balancerTag })
   }
-
   const setBalancer = (val: string) => {
     onChange({ ...rule, balancerTag: val || undefined, outboundTag: val ? undefined : rule.outboundTag })
   }
 
+  const sourcePortError = validatePortString(rule.sourcePort ?? '')
+  const portError = validatePortString(rule.port ?? '')
+  const ipError = validateCidrList(rule.ip ?? [])
+  const sourceError = validateCidrList(rule.source ?? [])
+
   return (
     <div className="rule-editor">
-      {/* Row 1: name + domainMatcher */}
+      {/* Row 1: ruleTag (left) + domainMatcher (right) */}
       <div className="editor-row editor-row-2">
         <div className="field-group">
-          <label className="field-label">Name</label>
+          <label className="field-label">Rule Tag <span className="label-note">(label)</span></label>
           <input
-            className="text-input"
-            value={rule.name ?? ''}
-            placeholder="optional label"
-            onChange={(e) => set('name', e.target.value || undefined)}
+            className="text-input rule-tag-input"
+            value={rule.ruleTag ?? ''}
+            placeholder="optional rule name"
+            onChange={(e) => set('ruleTag', e.target.value || undefined)}
           />
         </div>
         <div className="field-group">
@@ -72,7 +76,7 @@ export function RuleEditor({ rule, tags, onChange }: Props) {
         </div>
       </div>
 
-      {/* Row 2: target — outboundTag XOR balancerTag */}
+      {/* Target */}
       <div className="editor-section-title">Target <span className="muted">(pick one)</span></div>
       <div className="editor-row editor-row-2">
         <TagSelect
@@ -91,8 +95,10 @@ export function RuleEditor({ rule, tags, onChange }: Props) {
         />
       </div>
 
-      {/* Row 3: inboundTag + user */}
+      {/* Match conditions */}
       <div className="editor-section-title">Match conditions</div>
+
+      {/* inboundTag + user */}
       <div className="editor-row editor-row-2">
         <TagMultiSelect
           label="Inbound Tag"
@@ -108,7 +114,7 @@ export function RuleEditor({ rule, tags, onChange }: Props) {
         />
       </div>
 
-      {/* Row 4: domain + ip */}
+      {/* domain + ip (with CIDR validation) */}
       <div className="editor-row editor-row-2">
         <StringListInput
           label="Domain"
@@ -116,15 +122,18 @@ export function RuleEditor({ rule, tags, onChange }: Props) {
           placeholder={'domain:example.com\ngeosite:category-ru'}
           onChange={(v) => set('domain', v.length ? v : undefined)}
         />
-        <StringListInput
-          label="IP"
-          value={rule.ip ?? []}
-          placeholder={'192.168.0.0/16\ngeoip:private'}
-          onChange={(v) => set('ip', v.length ? v : undefined)}
-        />
+        <div className="field-group">
+          <StringListInput
+            label="IP"
+            value={rule.ip ?? []}
+            placeholder={'192.168.0.0/16\ngeoip:private'}
+            onChange={(v) => set('ip', v.length ? v : undefined)}
+          />
+          {ipError && <span className="field-error">{ipError}</span>}
+        </div>
       </div>
 
-      {/* Row 5: network checkboxes + protocol checkboxes */}
+      {/* network + protocol */}
       <div className="editor-row editor-row-2">
         <div className="field-group">
           <label className="field-label">Network</label>
@@ -158,45 +167,43 @@ export function RuleEditor({ rule, tags, onChange }: Props) {
         </div>
       </div>
 
-      {/* Row 6: port + sourcePort */}
+      {/* sourcePort (left) + port (right) — swapped per spec */}
       <div className="editor-row editor-row-2">
-        <div className="field-group">
-          <label className="field-label">Port</label>
-          <input
-            className="text-input mono"
-            value={rule.port ?? ''}
-            placeholder="80, 443, 1000-2000"
-            onChange={(e) => set('port', e.target.value || undefined)}
-          />
-        </div>
         <div className="field-group">
           <label className="field-label">Source Port</label>
           <input
-            className="text-input mono"
+            className={`text-input mono ${sourcePortError ? 'input-error' : ''}`}
             value={rule.sourcePort ?? ''}
             placeholder="80, 443, 1000-2000"
             onChange={(e) => set('sourcePort', e.target.value || undefined)}
           />
+          {sourcePortError && <span className="field-error">{sourcePortError}</span>}
+        </div>
+        <div className="field-group">
+          <label className="field-label">Port</label>
+          <input
+            className={`text-input mono ${portError ? 'input-error' : ''}`}
+            value={rule.port ?? ''}
+            placeholder="80, 443, 1000-2000"
+            onChange={(e) => set('port', e.target.value || undefined)}
+          />
+          {portError && <span className="field-error">{portError}</span>}
         </div>
       </div>
 
-      {/* Row 7: source + ruleTag */}
+      {/* source (with CIDR validation) */}
       <div className="editor-row editor-row-2">
-        <StringListInput
-          label="Source IP"
-          value={rule.source ?? []}
-          placeholder={'10.0.0.0/8\ngeoip:cn'}
-          onChange={(v) => set('source', v.length ? v : undefined)}
-        />
         <div className="field-group">
-          <label className="field-label">Rule Tag</label>
-          <input
-            className="text-input"
-            value={rule.ruleTag ?? ''}
-            placeholder="optional"
-            onChange={(e) => set('ruleTag', e.target.value || undefined)}
+          <StringListInput
+            label="Source IP"
+            value={rule.source ?? []}
+            placeholder={'10.0.0.0/8\ngeoip:cn'}
+            onChange={(v) => set('source', v.length ? v : undefined)}
           />
+          {sourceError && <span className="field-error">{sourceError}</span>}
         </div>
+        {/* empty right cell for layout balance */}
+        <div />
       </div>
     </div>
   )

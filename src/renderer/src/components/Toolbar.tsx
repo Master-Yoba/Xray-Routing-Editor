@@ -8,9 +8,19 @@ interface Props {
   onSave: () => void
   onSaveAs: () => void
   onAddRule: () => void
+  onPreview: () => void
 }
 
-export function Toolbar({ filePath, dirty, hasConfig, onOpen, onSave, onSaveAs, onAddRule }: Props) {
+export function Toolbar({
+  filePath,
+  dirty,
+  hasConfig,
+  onOpen,
+  onSave,
+  onSaveAs,
+  onAddRule,
+  onPreview
+}: Props) {
   return (
     <div className="toolbar">
       <div className="toolbar-left">
@@ -29,6 +39,9 @@ export function Toolbar({ filePath, dirty, hasConfig, onOpen, onSave, onSaveAs, 
         </button>
         {hasConfig && (
           <>
+            <button className="btn btn-ghost" onClick={onPreview} title="Preview routing section as it will be saved">
+              Preview
+            </button>
             <button className="btn btn-secondary" onClick={onSaveAs}>
               Save As
             </button>

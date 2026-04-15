@@ -15,6 +15,19 @@ interface Props {
   onDelete: () => void
 }
 
+type TargetKind = 'blackhole' | 'freedom' | 'outbound' | 'balancer' | 'none'
+
+function getTargetKind(rule: RuleObject, outboundProtocols: Record<string, string>): TargetKind {
+  if (rule.balancerTag) return 'balancer'
+  if (rule.outboundTag) {
+    const proto = outboundProtocols[rule.outboundTag] ?? ''
+    if (proto === 'blackhole') return 'blackhole'
+    if (proto === 'freedom') return 'freedom'
+    return 'outbound'
+  }
+  return 'none'
+}
+
 export function RuleCard({ rule, index, expanded, tags, onToggle, onChange, onDelete }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: rule._id!
@@ -26,11 +39,8 @@ export function RuleCard({ rule, index, expanded, tags, onToggle, onChange, onDe
     opacity: isDragging ? 0.4 : 1
   }
 
-  const target = rule.outboundTag
-    ? { label: rule.outboundTag, kind: 'outbound' }
-    : rule.balancerTag
-      ? { label: rule.balancerTag, kind: 'balancer' }
-      : { label: 'no target', kind: 'none' }
+  const kind = getTargetKind(rule, tags.outboundProtocols)
+  const targetLabel = rule.outboundTag ?? rule.balancerTag ?? 'no target'
 
   return (
     <div
@@ -54,9 +64,16 @@ export function RuleCard({ rule, index, expanded, tags, onToggle, onChange, onDe
         <span className="rule-index">#{index + 1}</span>
 
         {/* target badge */}
-        <span className={`target-badge target-${target.kind}`}>{target.label}</span>
+        <span className={`target-badge target-${kind}`}>{targetLabel}</span>
 
-        {/* summary */}
+        {/* ruleTag label (highlighted, if set) */}
+        {rule.ruleTag && (
+          <span className="rule-tag-label" title={`ruleTag: ${rule.ruleTag}`}>
+            {rule.ruleTag}
+          </span>
+        )}
+
+        {/* summary conditions */}
         <span className="rule-summary" title={ruleSummary(rule)}>
           {summaryConditions(rule)}
         </span>
@@ -78,9 +95,7 @@ export function RuleCard({ rule, index, expanded, tags, onToggle, onChange, onDe
         </div>
       </div>
 
-      {expanded && (
-        <RuleEditor rule={rule} tags={tags} onChange={onChange} />
-      )}
+      {expanded && <RuleEditor rule={rule} tags={tags} onChange={onChange} />}
     </div>
   )
 }
@@ -101,6 +116,5 @@ function summaryConditions(rule: RuleObject): string {
   if (rule.inboundTag?.length) parts.push(`inbound: ${rule.inboundTag.join(',')}`)
   if (rule.user?.length) parts.push(`user[${rule.user.length}]`)
   if (rule.source?.length) parts.push(`src[${rule.source.length}]`)
-  if (rule.name) parts.push(`"${rule.name}"`)
   return parts.join('  ·  ') || '— no conditions —'
 }
