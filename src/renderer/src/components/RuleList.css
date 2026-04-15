@@ -1,0 +1,31 @@
+.rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.empty-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--clr-muted);
+  font-size: 14px;
+  text-align: center;
+  gap: 8px;
+}
+
+.empty-list p {
+  margin: 0;
+}
+
+.empty-list .muted {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.empty-list strong {
+  color: var(--clr-fg);
+}

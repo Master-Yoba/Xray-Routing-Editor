@@ -1,0 +1,215 @@
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--clr-muted);
+}
+
+/* ── TagSelect ── */
+.tag-select {
+  position: relative;
+}
+
+.tag-select-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 10px;
+  background: var(--clr-input);
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  color: var(--clr-fg);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+
+.tag-select-trigger:hover {
+  border-color: var(--clr-accent);
+}
+
+.tag-select-trigger span:first-child {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--clr-muted);
+}
+
+.tag-select-trigger.has-value span:first-child {
+  color: var(--clr-fg);
+}
+
+.clear-btn {
+  font-size: 11px;
+  color: var(--clr-muted);
+  padding: 0 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.clear-btn:hover {
+  color: var(--clr-danger);
+}
+
+.chevron {
+  font-size: 10px;
+  color: var(--clr-muted);
+  flex-shrink: 0;
+}
+
+/* ── Dropdown shared ── */
+.dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 100;
+  background: var(--clr-surface2);
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.dropdown-filter {
+  width: 100%;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--clr-border);
+  color: var(--clr-fg);
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.dropdown-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--clr-fg);
+  transition: background 0.1s;
+}
+
+.dropdown-item:hover {
+  background: var(--clr-hover);
+}
+
+.dropdown-item.selected {
+  color: var(--clr-accent);
+  font-weight: 600;
+}
+
+.dropdown-item.disabled {
+  color: var(--clr-muted);
+  cursor: default;
+}
+
+.dropdown-item.disabled:hover {
+  background: transparent;
+}
+
+.dropdown-item.empty-item {
+  color: var(--clr-muted);
+  font-style: italic;
+}
+
+.dropdown-item.add-new {
+  color: var(--clr-accent);
+}
+
+/* ── TagMultiSelect ── */
+.tag-multiselect {
+  position: relative;
+}
+
+.tag-multiselect-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 4px 8px;
+  background: var(--clr-input);
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  cursor: text;
+  transition: border-color 0.15s;
+}
+
+.tag-multiselect-box:focus-within {
+  border-color: var(--clr-accent);
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--clr-chip);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--clr-fg);
+}
+
+.chip-remove {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 10px;
+  color: var(--clr-muted);
+  line-height: 1;
+}
+
+.chip-remove:hover {
+  color: var(--clr-danger);
+}
+
+.tag-input {
+  flex: 1;
+  min-width: 80px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--clr-fg);
+  font-size: 13px;
+  padding: 2px 2px;
+}
+
+/* ── StringListInput ── */
+.string-list-input {
+  width: 100%;
+  padding: 6px 10px;
+  background: var(--clr-input);
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  color: var(--clr-fg);
+  font-size: 13px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+  line-height: 1.5;
+  transition: border-color 0.15s;
+}
+
+.string-list-input:focus {
+  border-color: var(--clr-accent);
+}

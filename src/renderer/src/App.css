@@ -1,0 +1,133 @@
+:root {
+  --clr-bg:         #16181d;
+  --clr-surface:    #1e2028;
+  --clr-surface2:   #1a1c22;
+  --clr-border:     #2d3040;
+  --clr-input:      #12141a;
+  --clr-hover:      #23263a;
+  --clr-chip:       #252840;
+  --clr-fg:         #e2e8f0;
+  --clr-muted:      #718096;
+  --clr-accent:     #4f7ef8;
+  --clr-accent-dim: #2d4a8a;
+  --clr-danger:     #fc8181;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--clr-bg);
+  color: var(--clr-fg);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Error banner ── */
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(245, 101, 101, 0.12);
+  border-bottom: 1px solid rgba(245, 101, 101, 0.3);
+  color: #fc8181;
+  font-size: 13px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.error-close {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* ── Welcome screen ── */
+.welcome {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-card {
+  text-align: center;
+  max-width: 400px;
+  padding: 48px 32px;
+}
+
+.welcome-card h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--clr-fg);
+}
+
+.welcome-card p {
+  margin: 0 0 28px;
+  color: var(--clr-muted);
+  line-height: 1.6;
+}
+
+.welcome-btn {
+  font-size: 14px;
+  padding: 10px 24px;
+}
+
+/* ── Main content ── */
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.rules-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px 6px;
+  flex-shrink: 0;
+}
+
+.rules-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--clr-fg);
+}
+
+.rules-hint {
+  font-size: 11px;
+  color: var(--clr-muted);
+}
+
+.rules-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.rules-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rules-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rules-scroll::-webkit-scrollbar-thumb {
+  background: var(--clr-border);
+  border-radius: 3px;
+}

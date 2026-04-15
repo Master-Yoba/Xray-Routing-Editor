@@ -1,0 +1,128 @@
+.rule-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px 20px;
+  background: var(--clr-surface2);
+  border-top: 1px solid var(--clr-border);
+}
+
+.editor-row {
+  display: grid;
+  gap: 14px;
+}
+
+.editor-row-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.editor-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--clr-accent);
+  margin-top: 4px;
+  margin-bottom: -6px;
+}
+
+.editor-section-title .muted {
+  color: var(--clr-muted);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.text-input {
+  width: 100%;
+  padding: 6px 10px;
+  background: var(--clr-input);
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  color: var(--clr-fg);
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.text-input:focus {
+  border-color: var(--clr-accent);
+}
+
+.text-input.mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.select-input {
+  width: 100%;
+  padding: 6px 10px;
+  background: var(--clr-input);
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  color: var(--clr-fg);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  transition: border-color 0.15s;
+}
+
+.select-input:focus {
+  border-color: var(--clr-accent);
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 6px 4px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--clr-fg);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type='checkbox'] {
+  accent-color: var(--clr-accent);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* ── ruleTag highlight ── */
+.label-note {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--clr-muted);
+  font-size: 10px;
+}
+
+.rule-tag-input {
+  border-color: var(--clr-accent-dim) !important;
+  color: #f6c90e !important;
+  font-weight: 600;
+}
+
+.rule-tag-input:focus {
+  border-color: var(--clr-accent) !important;
+}
+
+/* ── validation ── */
+.input-error {
+  border-color: var(--clr-danger) !important;
+}
+
+.field-error {
+  display: block;
+  font-size: 11px;
+  color: var(--clr-danger);
+  margin-top: 2px;
+}

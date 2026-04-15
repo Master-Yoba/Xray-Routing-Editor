@@ -1,0 +1,920 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "stats": {},
+  "api": {
+    "tag": "api",
+    "listen": "127.0.0.1:8080",
+    "services": [
+      "StatsService"
+    ]
+  },
+  "policy": {
+    "levels": {
+      "0": {
+        "statsUserUplink": true,
+        "statsUserDownlink": true
+      }
+    },
+    "system": {
+      "statsInboundUplink": true,
+      "statsInboundDownlink": true,
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
+  },
+  "metrics": {
+    "tag": "Metrics",
+    "listen": "0.0.0.0:11111"
+  },
+  "inbounds": [
+    {
+      "tag": "socks",
+      "port": 2080,
+      "listen": "192.168.71.16",
+      "protocol": "socks",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "routeOnly": false
+      },
+      "settings": {
+        "udp": true
+      }
+    },
+    {
+      "tag": "mtg-in",
+      "port": 2081,
+      "listen": "192.168.71.16",
+      "protocol": "socks",
+      "auth": "noauth",
+      "accounts": [
+        {
+          "user": "mtg",
+          "pass": "concordian"
+        }
+      ],
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "routeOnly": false
+      },
+      "settings": {
+        "udp": true
+      }
+    },
+    {
+      "tag": "monitor-alexhost",
+      "port": 3081,
+      "listen": "192.168.71.16",
+      "protocol": "socks",
+      "auth": "password",
+      "accounts": [
+        {
+          "user": "kuma",
+          "pass": "monitor1"
+        }
+      ],
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "routeOnly": false
+      },
+      "settings": {
+        "udp": true
+      }
+    },
+    {
+      "tag": "monitor-lumadock",
+      "port": 3082,
+      "listen": "192.168.71.16",
+      "protocol": "socks",
+      "auth": "password",
+      "accounts": [
+        {
+          "user": "kuma",
+          "pass": "monitor2"
+        }
+      ],
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "routeOnly": false
+      },
+      "settings": {
+        "udp": true
+      }
+    },
+    {
+      "tag": "Vless-TCP-XTLS",
+      "port": 443, // This is TLS entrypoint. This entrypoint does the SSL Termination then routes the request based on the Path or ALPN type.
+      "listen": "192.168.71.16",
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "23a6c822-3271-11f1-9f5a-5339fb17ce54",
+            "email": "alex-tcp-xtls",
+            "flow": "xtls-rprx-vision",
+            "level": 0
+          },
+          {
+            "id": "3f0c5c8a-d034-465d-98c7-fa324cb7b123",
+            "email": "vladimir-tcp-xtls",
+            "flow": "xtls-rprx-vision",
+            "level": 0
+          },
+          {
+            "id": "fa6dadfb-4725-4cf4-acd5-71fdef61555d",
+            "email": "julia-tcp-xtls",
+            "flow": "xtls-rprx-vision",
+            "level": 0
+          },
+          {
+            "id": "8335b849-bd05-447a-bf57-daf2754748b9",
+            "email": "helen-tcp-xtls",
+            "flow": "xtls-rprx-vision",
+            "level": 0
+          }
+        ],
+        "decryption": "none",
+        "fallbacks": [
+          // {
+          //   // if the path was `/vlws`, pass it to vless-ws listener
+          //   "path": "/vlesswshidden",
+          //   "dest": "127.0.0.1:8889"
+          // },
+          // {
+          //   // if the request's ALPN was HTTP2, pass it to trojan-tcp. (Also from trojan-tcp fallback to Nginx HTTP2)
+          //   "alpn": "h2",
+          //   "dest": "/dev/shm/h2.sock",
+          //   "xver": 2
+          // },
+          // {
+          //   // if not any other condition, pass it to Nginx HTTP1.1 listener
+          //   "dest": "/dev/shm/h1.sock",
+          //   "xver": 2
+          // }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "sockopt": {
+          "acceptProxyProtocol": true
+        },
+        "tlsSettings": {
+          "certificates": [
+            {
+              "ocspStapling": 3600, //The Xray version is not less than v1.3.0 to support configuring the time interval between OCSP stapling update and certificate hot reload. Currently V2Ray does not support it. If you use V2Ray as the server, you must delete this configuration.
+              "certificateFile": "/usr/local/share/xray/certs/fullchain.cer", // this is te fullchain (domain + any bundle). Make sure the permissions are correct (absolute path)
+              "keyFile": "/usr/local/share/xray/certs/ingress.22181771.xyz.key" // this is the private key of the cert. Make sure the permissions are correct (absolute path)
+            }
+          ],
+          "minVersion": "1.2", //Xray version is not less than v1.1.4 to support configuring the minimum TLS version. Currently V2Ray does not support it. If you use V2Ray as the server, you must delete this configuration.
+          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", //Xray版本不小于v1.1.4才支持配置密码套件（若无RSA证书，可删除所有RSA算法的密码套件；无ECC证书, to remove cipher suites for all ECDSA algorithms.). Currently V2Ray does not support it. If you use V2Ray as the server, you must delete this configuration.
+          "alpn": [
+            "h2", //Enabling h2 connection needs to configure h2 fallback, otherwise inconsistency (streaking) is easily detected by the wall and blocked.
+            "http/1.1" //Enabling http/1.1 connection needs to configure http/1.1 fallback, otherwise inconsistency (streaking) is easily detected by the wall and blocked.
+          ]
+        }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      }
+    },
+    {
+      "listen": "/dev/shm/grpc.socket,0666",
+      "protocol": "vless",
+      "tag": "grpc",
+      "settings": {
+        "clients": [
+          {
+            "id": "4657aa90-3270-11f1-ae2a-7f7c7ff6ba77",
+            "email": "alex-grpc"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "5bfb0b9e327011f18280df21b9338538"
+        }
+      }
+    },
+    {
+      "listen": "/dev/shm/ws.socket,0666",
+      "protocol": "vless",
+      "tag": "ws",
+      "settings": {
+        "clients": [
+          {
+            "id": "4657aa90-3270-11f1-ae2a-7f7c7ff6ba77",
+            "email": "alex-ws"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "6d1ce0dc327011f1893dcf97574b1818"
+        }
+      }
+    },
+    {
+      "port": 5353,
+      "protocol": "shadowsocks",
+      "settings": {
+        "method": "2022-blake3-aes-128-gcm",
+        "password": "jG9FX9oL+w0ZiNpymCgHiA==",
+        "clients": [
+          {
+            "password": "J9oBRl7gSSxDTILhKTcXbA==",
+            "email": "alex-shadowsocks"
+          },
+          {
+            "password": "HCJ2OF1BFb613w9C8JAzXw==",
+            "email": "julia-shadowsocks"
+          },
+          {
+            "password": "TaKF7ixDiZgXRZvtBwd1DA==",
+            "email": "helen-shadowsocks"
+          }
+        ],
+        "network": "tcp,udp"
+      }
+    }
+  ],
+  "outbounds": [
+    //rprx_reality_classic
+    {
+      "tag": "xtls-vision-reality",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "217.156.64.175",
+            "port": 443,
+            "users": [
+              {
+                "id": "9e2a01ce-490e-4c94-b46f-cff8c0ca0ad4",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "unimedia.info",
+          "fingerprint": "chrome",
+          "show": false,
+          "publicKey": "nDhPKBn7JSDNAFTPL9F8LpvsJLVWiwGrO5Jr6z2LR2g",
+          "shortId": "d7ef0fe4a9866372",
+          "spiderX": ""
+        }
+      }
+    },
+    //xhttp_reality_full
+    {
+      "tag": "xhttp_reality_md",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "217.156.64.175",
+            "port": 443,
+            "users": [
+              {
+                "id": "a077e342-3ea3-456e-a81c-ce9e6251f445",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "unimedia.info",
+          "fingerprint": "chrome",
+          "show": false,
+          "publicKey": "nDhPKBn7JSDNAFTPL9F8LpvsJLVWiwGrO5Jr6z2LR2g",
+          "shortId": "d7ef0fe4a9866372",
+          "spiderX": ""
+        },
+        "xhttpSettings": {
+          "host": "",
+          "path": "/xhttp14e7d09baa8f34134ba0b50156b187dd",
+          "mode": "stream-up",
+          "extra": {
+            "xmux": { // h2/h3 mainly, client only
+              "maxConnections": "9-10",
+              "cMaxReuseTimes": 0,
+              "hMaxRequestTimes": "600-900",
+              "hMaxReusableSecs": "1800-3000",
+              "hKeepAlivePeriod": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "tag": "xhttp_reality_lumadock_fi",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "38.7.145.168",
+            "port": 443,
+            "users": [
+              {
+                "id": "4d6bb73a-b2af-49b2-9562-c02fc98a0198",
+                "flow": "xtls-rprx-vision",
+                "encryption": "mlkem768x25519plus.xorpub.0rtt.fLJtNPKRNvPYRFgcqzjCRXpm0sZ5fxhRqnsdeka3pkk"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "bcat-data-lp1.cdn.nintendo.net",
+          "fingerprint": "chrome",
+          "show": false,
+          "publicKey": "MpZvl4nmsXq-vPch5aOtyMyXIDG_BxJPaV3IpsWwVjQ",
+          "shortId": "b72a212d0d7379b2",
+          "spiderX": ""
+        },
+        "xhttpSettings": {
+          "host": "",
+          "path": "/xhttp1339a191659d44b0912d9075fdd8da31",
+          "mode": "stream-up",
+          "extra": {
+            "xmux": { // h2/h3 mainly, client only
+              "maxConnections": "6",
+              "cMaxReuseTimes": 0,
+              "hMaxRequestTimes": "600-900",
+              "hMaxReusableSecs": "1800-3000",
+              "hKeepAlivePeriod": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "tag": "cdn_xhttp_cia-out",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "exility.22181771.xyz",
+            "port": 443,
+            "users": [
+              {
+                "id": "a077e342-3ea3-456e-a81c-ce9e6251f445",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "proxySettings": {
+        "tag": "ciadpi-cf",
+        "transportLayer": true
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "exility.22181771.xyz",
+          "allowInsecure": false,
+          "alpn": [
+            "h2"
+          ],
+          "fingerprint": "edge"
+        },
+        "xhttpSettings": {
+          "host": "",
+          "path": "/xhttp14e7d09baa8f34134ba0b50156b187dd",
+          "mode": "stream-up",
+          "extra": {
+            "headers": {
+              "User-Agent": "Hub Opsec"
+            },
+            "xmux": { // h2/h3 mainly, client only
+              "maxConnections": "9-10",
+              "cMaxReuseTimes": 0,
+              "hMaxRequestTimes": "600-900",
+              "hMaxReusableSecs": "1800-3000",
+              "hKeepAlivePeriod": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "protocol": "socks",
+      "settings": {
+        "servers": [
+          {
+            "address": "10.0.98.2", // The address of your SOCKS proxy server
+            "port": 2082, // The port of your SOCKS proxy server
+            "users": [
+              {
+                "user": "komenda", // Optional: Username for SOCKS5 authentication
+                "pass": "supersecrettunnel" // Optional: Password for SOCKS5 authentication
+              }
+            ]
+          }
+        ]
+      },
+      "tag": "dv-out"
+    },
+    {
+      "protocol": "socks",
+      "settings": {
+        "servers": [
+          {
+            "address": "192.168.1.53", // The address of your SOCKS proxy server
+            "port": 4082, // The port of your SOCKS proxy server
+            "user": "komenda", // Optional: Username for SOCKS5 authentication
+            "pass": "supersecrettunnel" // Optional: Password for SOCKS5 authentication
+          }
+        ]
+      },
+      "tag": "d22-out"
+    },
+    {
+      "protocol": "socks",
+      "settings": {
+        "servers": [
+          {
+            "address": "127.0.0.1", // The address of your SOCKS proxy server
+            "port": 1080 // The port of your SOCKS proxy server
+          }
+        ]
+      },
+      "tag": "ciadpi-cf"
+    },
+    {
+      "protocol": "socks",
+      "settings": {
+        "servers": [
+          {
+            "address": "127.0.0.1", // The address of your SOCKS proxy server
+            "port": 1081 // The port of your SOCKS proxy server
+          }
+        ]
+      },
+      "tag": "ciadpi-ovh"
+    },
+    {
+      "protocol": "socks",
+      "settings": {
+        "servers": [
+          {
+            "address": "127.0.0.1", // The address of your SOCKS proxy server
+            "port": 1082 // The port of your SOCKS proxy server
+          }
+        ]
+      },
+      "tag": "ciadpi-akamai"
+    },
+    {
+      "protocol": "socks",
+      "settings": {
+        "servers": [
+          {
+            "address": "127.0.0.1", // The address of your SOCKS proxy server
+            "port": 1083 // The port of your SOCKS proxy server
+          }
+        ]
+      },
+      "tag": "ciadpi-amazon"
+    },
+    {
+      "protocol": "socks",
+      "settings": {
+        "servers": [
+          {
+            "address": "127.0.0.1", // The address of your SOCKS proxy server
+            "port": 1084 // The port of your SOCKS proxy server
+          }
+        ]
+      },
+      "tag": "ciadpi-google"
+    },
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIPv4"
+      }
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
+    },
+    {
+      "protocol": "loopback",
+      "tag": "loopback-out",
+      "settings": {
+        "inboundTag": "loopback-in" // This tag will be used as the inboundTag inside the RuleObject
+      }
+    }
+  ],
+  "dns": {
+    "hosts": {
+      "dns.google": "8.8.8.8",
+      "common.dot.dns.yandex.net": "77.88.8.8"
+    },
+    "servers": [
+      "192.168.71.14",
+      {
+        "address": "https://common.dot.dns.yandex.net/dns-query",
+        "domains": [
+          "geosite:category-ru"
+        ],
+        "expectedIPs": [
+          "geoip:ru"
+        ],
+        "skipFallback": false
+      }
+      //"https://dns.google/dns-query"
+    ]
+  },
+  "routing": {
+    "domainStrategy": "IPOnDemand",
+    "rules": [
+      {
+        "type": "field",
+        "outboundTag": "direct",
+        "protocol": [
+          "bittorrent"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "block",
+        "network": "udp",
+        "port": "443"
+      },
+      {
+        "type": "field",
+        "outboundTag": "block",
+        "domain": [
+          "geosite:category-ads-all"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "block",
+        "domain": [
+          "max.ru",
+          "oneme.ru",
+          "okcdn.ru"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "direct",
+        "ip": [
+          "geoip:private"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "direct",
+        "domain": [
+          "geosite:private"
+        ]
+      },
+      {
+        "type": "field",
+        "balancerTag": "proxy-fallback",
+        "inboundTag": [
+          "loopback-in"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "direct",
+        "ip": [
+          "1.0.0.1",
+          "1.1.1.1",
+          "8.8.8.8",
+          "8.8.4.4"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "d22-out",
+        "domain": [
+          "domain:by",
+          "yandex",
+          "sberbank",
+          "tinkoff",
+          "tbank",
+          "geosite:category-ru"
+        ],
+        "user": [
+          "alex-tcp-xtls",
+          "alex-grpc",
+          "alex-ws"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "block",
+        "domain": [
+          "domain:by",
+          "yandex",
+          "sberbank",
+          "tinkoff",
+          "tbank",
+          "geosite:category-ru"
+        ]
+      },
+      {
+        "type": "field",
+        "balancerTag": "proxy",
+        "domain": [
+          "geosite:telegram"
+        ]
+      },
+      {
+        "type": "field",
+        "balancerTag": "proxy",
+        "ip": [
+          "geoip:telegram"
+        ]
+      },
+      // ssh over proxy
+      {
+        "type": "field",
+        "balancerTag": "proxy",
+        "inboundTag": [
+          "socks"
+        ],
+        "network": "tcp",
+        "port": "22"
+      },
+      // monitor
+      {
+        "type": "field",
+        "outboundTag": "xhttp_reality_md",
+        "inboundTag": [
+          "monitor-alexhost"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "xhttp_reality_lumadock_fi",
+        "inboundTag": [
+          "monitor-lumadock"
+        ]
+      },
+      // discord voice
+      {
+        "type": "field",
+        "balancerTag": "proxy",
+        "ip": [
+          "66.22.192.0/18", // US-DISCORD1-20000919
+          //"66.22.196.0/22",
+          //"66.22.200.0/22",
+          //"66.22.204.0/22",
+          //"66.22.208.0/20",
+          //"66.22.224.0/20",
+          //"66.22.240.0/21",
+          "35.207.64.0/18",
+          "35.207.128.0/18",
+          "35.207.192.0/18", //India
+          "35.214.155.16/28",
+          "35.214.155.32/27",
+          "35.214.155.64/26",
+          "35.214.155.128/25",
+          "35.214.156.0/22",
+          "35.214.160.0/19",
+          "35.214.192.0/18",
+          "35.215.192.0/18", //brazil
+          "35.215.128.0/18", //hong kong
+          "35.217.0.0/18", //finland
+          "34.0.240.0/20",
+          "34.0.192.0/19"
+        ],
+        "network": "udp"
+      },
+      {
+        "type": "field",
+        "outboundTag": "dv-out",
+        "domain": [
+          "geosite:youtube"
+        ],
+        "ruleTag": "ytube"
+      },
+      {
+        "type": "field",
+        "outboundTag": "d22-out",
+        "domain": [
+          "geoip:ru"
+        ],
+        "ruleTag": "geoip-ru",
+        "user": [
+          "alex-tcp-xtls",
+          "alex-grpc",
+          "alex-ws"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "block",
+        "domain": [
+          "geoip:ru"
+        ],
+        "ruleTag": "geoip-ru"
+      },
+      {
+        "type": "field",
+        "balancerTag": "proxy",
+        "domain": [
+          "geosite:netflix",
+          "geosite:anime",
+          "geosite:category-ai-!cn",
+          "geosite:pornhub"
+        ]
+      },
+      {
+        "type": "field",
+        "balancerTag": "proxy",
+        "domain": [
+          "geosite:meta"
+        ],
+        "ip": [
+          "ext:geoip-services.dat:facebook"
+        ],
+        "ruleTag": "meta"
+      },
+      {
+        "type": "field",
+        "balancerTag": "proxy",
+        "domain": [
+          "geosite:ru-blocked"
+        ],
+        "ruleTag": "ru-blocked"
+      },
+      // extra sanctions
+      {
+        "type": "field",
+        "outboundTag": "cdn_xhttp_cia-out",
+        "domain": [
+          "domain:digitalocean.com",
+          "domain:orange-labs.fr",
+          "domain:cisco.com",
+          "domain:howlongtobeat.com",
+          "domain:customfw.xyz",
+          "domain:ign.com",
+          "domain:worldcat.org",
+          "copilot.microsoft.com",
+          "subcreation.net",
+          "domain:cub.red",
+          "domain:blizzardwatch.com",
+          "domain:lego.com",
+          "domain:brickset.com",
+          "warframe.com",
+          "domain:download.proxmox.com",
+          "domain:gamerant.com"
+        ]
+      },
+      // BYEDPI TLS FAKE
+      {
+        "type": "field",
+        "outboundTag": "ciadpi-cf",
+        "ip": [
+          "geoip:cloudflare"
+        ],
+        "network": "tcp"
+      },
+      {
+        "type": "field",
+        "outboundTag": "ciadpi-akamai",
+        "ip": [
+          "ext:akamai_geoip_ipv4.dat:akamai"
+        ],
+        "network": "tcp"
+      },
+      {
+        "type": "field",
+        "outboundTag": "ciadpi-ovh",
+        "ip": [
+          "ext:ovh_geoip_ipv4.dat:ovh"
+        ],
+        "network": "tcp"
+      },
+      {
+        "type": "field",
+        "balancerTag": "proxy",
+        "ip": [
+          "ext:geoip-services.dat:amazon",
+          "ext:geoip-services.dat:cloudfront"
+        ],
+        "user": [
+          "helen-tcp-xtls"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "ciadpi-amazon",
+        "ip": [
+          "ext:geoip-services.dat:amazon",
+          "ext:geoip-services.dat:cloudfront"
+        ],
+        "network": "tcp"
+      },
+      {
+        "type": "field",
+        "balancerTag": "proxy",
+        "ip": [
+          "ext:geoip-services.dat:amazon",
+          "ext:geoip-services.dat:cloudfront",
+          "geoip:cloudflare"
+        ],
+        "user": [
+          "alex-tcp-xtls"
+        ]
+      },
+      {
+        "type": "field",
+        "port": "0-65535",
+        "outboundTag": "d22-out"
+      }
+    ],
+    "balancers": [
+      {
+        "tag": "proxy",
+        "selector": [
+          "cdn_xhttp_cia-out"
+        ],
+        "fallbackTag": "loopback-out",
+        "strategy": {
+          "type": "leastPing"
+        }
+      },
+      {
+        "tag": "proxy-fallback",
+        "selector": [
+          "xhttp_reality_md",
+          "xhttp_reality_lumadock_fi"
+        ],
+        "fallbackTag": "xtls-vision-reality",
+        "strategy": {
+          "type": "leastPing"
+        }
+      }
+    ]
+  },
+  "observatory": {
+    "subjectSelector": [
+      "xhttp_reality_md",
+      "xhttp_reality_lumadock_fi",
+      "cdn_xhttp_cia-out"
+    ],
+    "probeUrl": "https://www.google.com/generate_204",
+    "probeInterval": "5m",
+    "enableConcurrency": true
+  }
+}
