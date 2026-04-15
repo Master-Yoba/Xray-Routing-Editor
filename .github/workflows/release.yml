@@ -3,7 +3,7 @@ name: Build And Release
 on:
   push:
     branches:
-      - master
+      - main
 
 permissions:
   contents: write
@@ -68,16 +68,16 @@ jobs:
           pattern: dist-*
           merge-multiple: true
 
-      - name: Publish rolling master release
+      - name: Publish rolling main release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: master-build
+          tag_name: main-build
           target_commitish: ${{ github.sha }}
-          name: Master Build
+          name: Main Build
           prerelease: true
           generate_release_notes: false
           body: |
-            Automated binaries built from the latest commit on `master`.
+            Automated binaries built from the latest commit on `main`.
 
             Commit: ${{ github.sha }}
           files: |
