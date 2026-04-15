@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "dist:mac": "electron-vite build && electron-builder --mac",
     "dist:win": "electron-vite build && electron-builder --win --x64",
     "dist:linux": "electron-vite build && electron-builder --linux --x64"
   },
@@ -32,7 +33,11 @@
       "out/**/*"
     ],
     "mac": {
-      "icon": "build/icon.icns"
+      "icon": "build/icon.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ]
     },
     "win": {
       "icon": "build/icon.ico",
